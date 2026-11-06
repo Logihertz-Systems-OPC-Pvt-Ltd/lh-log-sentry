@@ -1,3 +1,13 @@
+# ==============================================================================
+# Product:       lh-log-sentry (lh-sentry)
+# Module:        tests.test_rules_ssh
+# Role:          Test Suite & Rule Verification
+# Organization:  Logihertz Systems (OPC) Private Limited (logihertzsystems)
+# Creator:       Sameer Tawade (Creator, Founder, Director & Whole and Sole Developer)
+# Contact:       ops@logihertz.com | https://logihertz.com/
+# License:       Apache License 2.0 (SPDX-License-Identifier: Apache-2.0)
+# ==============================================================================
+
 """Unit tests for SSH brute-force velocity detection rule."""
 
 from datetime import datetime, timedelta
@@ -118,4 +128,3 @@ def test_ssh_bruteforce_multiple_ips() -> None:
     assert len(anomalies) == 2
     ips = {a.source_ip for a in anomalies}
     assert ips == {"198.51.100.1", "198.51.100.2"}
-

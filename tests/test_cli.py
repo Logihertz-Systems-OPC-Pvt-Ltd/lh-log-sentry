@@ -1,3 +1,13 @@
+# ==============================================================================
+# Product:       lh-log-sentry (lh-sentry)
+# Module:        tests.test_cli
+# Role:          Test Suite & Rule Verification
+# Organization:  Logihertz Systems (OPC) Private Limited (logihertzsystems)
+# Creator:       Sameer Tawade (Creator, Founder, Director & Whole and Sole Developer)
+# Contact:       ops@logihertz.com | https://logihertz.com/
+# License:       Apache License 2.0 (SPDX-License-Identifier: Apache-2.0)
+# ==============================================================================
+
 """Unit tests for the lh-sentry command line interface."""
 
 from pathlib import Path
@@ -71,4 +81,3 @@ def test_cli_simulate_stdout() -> None:
 def test_cli_analyze_nonexistent_file() -> None:
     res = runner.invoke(app, ["analyze", "/nonexistent/path/to/log.log"])
     assert res.exit_code != 0
-

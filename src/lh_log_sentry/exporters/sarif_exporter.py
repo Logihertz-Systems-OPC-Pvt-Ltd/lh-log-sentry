@@ -1,3 +1,13 @@
+# ==============================================================================
+# Product:       lh-log-sentry (lh-sentry)
+# Module:        src.lh_log_sentry.exporters.sarif_exporter
+# Role:          SARIF, JSON & Rich Terminal Table Exporters
+# Organization:  Logihertz Systems (OPC) Private Limited (logihertzsystems)
+# Creator:       Sameer Tawade (Creator, Founder, Director & Whole and Sole Developer)
+# Contact:       ops@logihertz.com | https://logihertz.com/
+# License:       Apache License 2.0 (SPDX-License-Identifier: Apache-2.0)
+# ==============================================================================
+
 """OASIS SARIF v2.1.0 exporter for security analysis reports."""
 
 from __future__ import annotations
@@ -80,7 +90,7 @@ def build_sarif_dict(report: AnalysisReport) -> dict[str, Any]:
                         "name": "lh-log-sentry",
                         "fullName": "Logihertz Log Sentry Anomaly Detector",
                         "version": "0.1.0",
-                        "informationUri": "https://github.com/logihertz/lh-log-sentry",
+                        "informationUri": "https://github.com/Logihertz-Systems-OPC-Pvt-Ltd/lh-log-sentry",
                         "rules": list(rules_dict.values()),
                     }
                 },
@@ -92,6 +102,9 @@ def build_sarif_dict(report: AnalysisReport) -> dict[str, Any]:
 
 
 def export_sarif(report: AnalysisReport, output_path: Path | str | None = None) -> str:
+    # --- OASIS SARIF v2.1.0 Compliance Exporter ---
+    # Serializes audit results into standard SARIF JSON format for native
+    # GitHub Code Scanning, GitLab Security Dashboard, and IDE integrations.
     """Export analysis report to OASIS SARIF v2.1.0 format and optionally write to file."""
     data = build_sarif_dict(report)
     sarif_str = json.dumps(data, indent=2)

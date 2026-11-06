@@ -1,3 +1,13 @@
+# ==============================================================================
+# Product:       lh-log-sentry (lh-sentry)
+# Module:        tests.test_rules_sudo
+# Role:          Test Suite & Rule Verification
+# Organization:  Logihertz Systems (OPC) Private Limited (logihertzsystems)
+# Creator:       Sameer Tawade (Creator, Founder, Director & Whole and Sole Developer)
+# Contact:       ops@logihertz.com | https://logihertz.com/
+# License:       Apache License 2.0 (SPDX-License-Identifier: Apache-2.0)
+# ==============================================================================
+
 """Unit tests for sudo and privilege escalation detection rules."""
 
 from datetime import datetime, timedelta
@@ -104,4 +114,3 @@ def test_sudo_repeated_auth_failures_sliding_window() -> None:
 
     anomalies = rule.evaluate(entries, window_seconds=300, threshold=3)
     assert any("repeated authentication failures" in a.description for a in anomalies)
-

@@ -1,3 +1,13 @@
+# ==============================================================================
+# Product:       lh-log-sentry (lh-sentry)
+# Module:        tests.test_rules_off_hours
+# Role:          Test Suite & Rule Verification
+# Organization:  Logihertz Systems (OPC) Private Limited (logihertzsystems)
+# Creator:       Sameer Tawade (Creator, Founder, Director & Whole and Sole Developer)
+# Contact:       ops@logihertz.com | https://logihertz.com/
+# License:       Apache License 2.0 (SPDX-License-Identifier: Apache-2.0)
+# ==============================================================================
+
 """Unit tests for off-hours and impossible-travel authentication detection."""
 
 from datetime import datetime, timedelta
@@ -57,4 +67,3 @@ def test_off_hours_privileged_login() -> None:
     a = anomalies[0]
     assert "Off-hours privileged login" in a.description
     assert a.severity == Severity.MEDIUM
-

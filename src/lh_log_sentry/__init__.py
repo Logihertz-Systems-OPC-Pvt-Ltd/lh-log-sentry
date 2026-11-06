@@ -1,3 +1,13 @@
+# ==============================================================================
+# Product:       lh-log-sentry (lh-sentry)
+# Module:        src.lh_log_sentry.__init__
+# Role:          Package Initialization & Public API Declarations
+# Organization:  Logihertz Systems (OPC) Private Limited (logihertzsystems)
+# Creator:       Sameer Tawade (Creator, Founder, Director & Whole and Sole Developer)
+# Contact:       ops@logihertz.com | https://logihertz.com/
+# License:       Apache License 2.0 (SPDX-License-Identifier: Apache-2.0)
+# ==============================================================================
+
 """lh-log-sentry: Lightweight log anomaly detector by Logihertz Systems OPC Pvt Ltd.
 
 Detects SSH brute-force attacks, unauthorized sudo/privilege escalation,

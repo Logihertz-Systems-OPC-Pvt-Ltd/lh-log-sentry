@@ -1,152 +1,122 @@
 # lh-log-sentry
 
-[![CI](https://github.com/logihertz/lh-log-sentry/actions/workflows/ci.yml/badge.svg)](https://github.com/logihertz/lh-log-sentry/actions/workflows/ci.yml)
+[![CI](https://github.com/Logihertz-Systems-OPC-Pvt-Ltd/lh-log-sentry/actions/workflows/ci.yml/badge.svg)](https://github.com/Logihertz-Systems-OPC-Pvt-Ltd/lh-log-sentry/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![Security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
 
-A lightweight Linux and web log anomaly detector built by **Logihertz Systems OPC Pvt Ltd**. `lh-log-sentry` parses authentication logs (`auth.log`, `secure`), syslog, and web access logs (Nginx/Apache) using structured regex extractors and sliding time-window aggregators to detect SSH brute-force attacks, unauthorized privilege escalation, impossible-travel events, and web application attack vectors.
+An enterprise siem telemetry & intrusion log analyzer developed by **Logihertz Systems (OPC) Private Limited**.
+
+Parses Linux auth.log, syslog, Nginx/Apache access logs, and JSON audit streams to detect SSH brute-force campaigns, sudo privilege escalations, log tampering/truncation gaps, and suspicious command execution.
 
 ---
 
 ## Key Features
 
-- **Multi-Format Log Parsers**:
-  - **Linux Auth Logs (`auth.log`, `secure`)**: Parses OpenSSH, PAM modules, `sudo` execution, and `su` privilege escalation events. Supports both traditional BSD syslog timestamps (`Nov  3 08:15:22`) and ISO 8601 timestamps.
-  - **Web Access Logs**: Parses Nginx and Apache Common Log Format (CLF) and Combined Log Format, with automatic multi-level URL decoding.
-  - **Syslog**: Standard system daemon, cron, kernel, and service messages.
-  - **Auto-Detection**: Sniffs sample lines to automatically select the optimal parser.
+- **Velocity & Threshold Analysis**: Employs sliding-window rate tracking to identify SSH brute-force login attacks and web credential stuffing bursts.
+- **Privilege Escalation Detection**: Audits sudo command logs for unauthorized sudoer commands, root shell escapes, and failed `su` attempts.
+- **Off-Hours & Impossible Travel Anomaly**: Flags suspicious logins occurring outside normal operational windows or from geographically distant IPs.
+- **Web Attack Pattern Matching**: Detects directory traversal (`../`), SQL injection, and XSS patterns in web access logs.
+- **Multi-Format Reporting**: Outputs rich terminal tables, machine-readable JSON, and OASIS SARIF v2.1.0.
 
-- **Sliding Time-Window Anomaly Detection Rules**:
-  - `LH-SSH-001` (SSH Brute-Force Velocity): Detects rapid failed SSH logins exceeding configurable thresholds within a moving time-window.
-  - `LH-AUTH-002` (Privilege Escalation): Flags unauthorized sudo executions (`user NOT in sudoers`, `command not allowed`), repeated sudo password failures, suspicious root shell spawns (`/bin/bash`, `visudo`, `passwd`), and failed `su` attempts to root.
-  - `LH-AUTH-003` (Off-Hours & Impossible Travel): Identifies authentications from distinct IP addresses within short time windows (impossible travel) and off-hours privileged root logins.
-  - `LH-WEB-001` (Web Path Traversal): Detects directory climbing probes (`../`, `%2e%2e%2f`) and sensitive system file access (`/etc/passwd`, `/etc/shadow`, `.env`, `.git/HEAD`).
-  - `LH-WEB-002` (Web Injection Attacks): Detects SQL injection (`UNION SELECT`, `' OR 1=1`, sleep functions), Cross-Site Scripting (XSS), and shell command injection.
-  - `LH-WEB-003` (Web Credential Stuffing): Detects bursts of 401/403 unauthorized responses from attacker IPs.
+---
 
-- **Flexible Export Formats**:
-  - **Rich Terminal Table**: Color-coded, severity-highlighted summaries and tables in terminal.
-  - **Structured JSON**: Machine-readable JSON output with comprehensive metadata.
-  - **OASIS SARIF v2.1.0**: Standardized Static Analysis Results Interchange Format for CI/CD and GitHub Code Scanning integration.
+## Core Detection Rules
 
-- **Synthetic Attack Simulator**:
-  - Generates realistic, reproducible synthetic log files for testing and validation across `ssh-bruteforce`, `sudo-escalation`, and `web-attack` scenarios.
+| Rule ID | Severity | Description |
+|:---|:---:|:---|
+| `LH-SSH-001` | `HIGH` | Rapid SSH authentication failure burst (brute-force velocity anomaly) |
+| `LH-AUTH-002` | `CRITICAL` | Unauthorized privilege escalation attempt (sudoers violation, su failure) |
+| `LH-AUTH-003` | `HIGH` | Off-hours root login or impossible travel velocity anomaly |
+| `LH-WEB-001` | `HIGH` | Directory and path traversal attack pattern in web server logs |
+| `LH-WEB-002` | `HIGH` | Web injection attack detected (SQLi, XSS, or OS command injection) |
+| `LH-WEB-003` | `HIGH` | Web credential stuffing velocity burst (rapid 401/403 response spike) |
+| `LH-LOG-001` | `MEDIUM` | Missing or truncated audit log timestamp entries |
+| `LH-LOG-002` | `HIGH` | High-frequency 404 scanning probe targeting sensitive administrative paths |
+| `LH-LOG-003` | `MEDIUM` | User-Agent spoofing or known offensive security scanner fingerprint |
+| `LH-LOG-004` | `LOW` | Unrecognized log record structure or unparsed syslog facility |
 
 ---
 
 ## Installation
 
-Install using [`uv`](https://docs.astral.sh/uv/):
+### Using `uv` (Recommended)
 
 ```bash
 # Clone the repository
-git clone https://github.com/logihertz/lh-log-sentry.git
+git clone https://github.com/Logihertz-Systems-OPC-Pvt-Ltd/lh-log-sentry.git
 cd lh-log-sentry
 
-# Create virtual environment and install with dev dependencies
+# Create virtual environment and install in editable mode with development tools
 uv venv
+source .venv/bin/activate
 uv pip install -e ".[dev]"
 ```
 
----
-
-## CLI Interface (`lh-sentry`)
-
-### 1. Analyze Log Files
+### Using standard `pip`
 
 ```bash
-# Automatic log format detection with Rich terminal table output
+pip install -e .
+```
+
+---
+
+## CLI Usage
+
+The primary executable entrypoint is `lh-sentry` (also accessible via `lh-sentry`).
+
+```bash
+# Analyze Linux auth.log for SSH brute-force attacks
 lh-sentry analyze /var/log/auth.log
 
-# Specify log type, custom time window, and threshold
-lh-sentry analyze /var/log/auth.log \
-  --log-type auth \
-  --window-seconds 300 \
-  --threshold 5 \
-  --format table
+# Analyze Nginx web access logs
+lh-sentry analyze /var/log/nginx/access.log --format json
 
-# Export findings to structured JSON
-lh-sentry analyze /var/log/nginx/access.log \
-  --log-type web \
-  --format json \
-  --output report.json
+# Simulate brute-force telemetry for testing
+lh-sentry simulate --scenario brute-force
 
-# Export findings to OASIS SARIF v2.1.0 for CI/CD
-lh-sentry analyze /var/log/syslog \
-  --log-type syslog \
-  --format sarif \
-  --output findings.sarif
+# Export findings to OASIS SARIF v2.1.0
+lh-sentry analyze /var/log/auth.log --format sarif --output sentry.sarif
 ```
 
-#### CLI Options for `analyze`
+---
 
-| Option | Flag | Description | Default |
-| ------ | ---- | ----------- | ------- |
-| `logfile` | | Path to log file to inspect | *(Required)* |
-| `--log-type` | `-t` | Log parser type (`auto`, `auth`, `web`, `syslog`) | `auto` |
-| `--window-seconds` | `-w` | Duration in seconds of sliding time window | `300` |
-| `--threshold` | | Minimum event count within window to trigger alert | `5` |
-| `--format` | `-f` | Output report format (`table`, `json`, `sarif`) | `table` |
-| `--output` | `-o` | Destination file path to save report | None (stdout) |
+## Exit Codes
+
+| Exit Code | Meaning |
+|:---:|:---|
+| `0` | All audits and security checks passed; no policy violations detected. |
+| `1` | One or more security findings, policy violations, or compliance failures detected. |
+| `2` | Execution error (invalid arguments, missing input files, malformed syntax). |
 
 ---
 
-### 2. Simulate Attack Scenarios
+## Documentation
 
-Generate synthetic log samples to validate detection rules and SOC workflows:
+Comprehensive enterprise documentation is available in the [`docs/`](docs/) directory and repository root:
 
-```bash
-# Simulate an SSH brute-force velocity attack
-lh-sentry simulate --scenario ssh-bruteforce --count 10 --output sample-ssh.log
-
-# Simulate unauthorized sudo escalation attempts
-lh-sentry simulate --scenario sudo-escalation --output sample-sudo.log
-
-# Simulate web path traversal, SQLi, XSS, and credential stuffing
-lh-sentry simulate --scenario web-attack --count 8 --output sample-web.log
-
-# Pipe directly into analyzer
-lh-sentry analyze sample-ssh.log --format table
-```
-
-#### CLI Options for `simulate`
-
-| Option | Flag | Description | Default |
-| ------ | ---- | ----------- | ------- |
-| `--scenario` | `-s` | Scenario (`ssh-bruteforce`, `sudo-escalation`, `web-attack`) | `ssh-bruteforce` |
-| `--output` | `-o` | Destination path to save the generated log file | None (stdout) |
-| `--count` | `-c` | Number of attack attempts or iterations | `10` |
-
----
-
-## Detection Rules Reference
-
-| Rule ID | Name | Severity | Target Logs | Description |
-| ------- | ---- | -------- | ----------- | ----------- |
-| `LH-SSH-001` | SSH Brute-Force Velocity | HIGH | `auth.log`, `secure` | Detects rapid failed SSH logins per IP within a sliding time window. |
-| `LH-AUTH-002` | Privilege Escalation | CRITICAL / HIGH | `auth.log`, `secure` | Detects unauthorized sudoers, command not allowed, su failures, and shell escapes. |
-| `LH-AUTH-003` | Off-Hours & Impossible Travel | HIGH / MEDIUM | `auth.log`, `secure` | Detects same-user logins from distinct IPs in rapid succession or late-night root logins. |
-| `LH-WEB-001` | Web Path Traversal | HIGH | Nginx / Apache | Detects `../`, URL-encoded directory traversal, and access to `/etc/passwd`, `.env`, etc. |
-| `LH-WEB-002` | Web Injection Attacks | HIGH | Nginx / Apache | Detects SQL injection, Cross-Site Scripting (XSS), and command injection patterns. |
-| `LH-WEB-003` | Web Credential Stuffing | HIGH | Nginx / Apache | Detects high-rate 401/403 authorization failures within a sliding time window. |
-
----
+- **[Architecture & Design](docs/ARCHITECTURE.md)**: Zero-daemon clean-room architecture, module responsibilities, domain models, and 0–100 risk score calculation formula.
+- **[Security Rules Reference](docs/RULES.md)**: Exhaustive catalog of all 10 detection rules with threat models, severities, and remediation guides.
+- **[CLI Usage Guide](docs/USAGE.md)**: Complete command-line manual, flags, exit codes, CI/CD SARIF upload workflows, and JSON pipelines.
+- **[Test & Verification Declaration](docs/TESTING.md)**: Audited test inventory, AST security verification, SAST audit results, and per-module code coverage metrics.
+- **[Changelog](CHANGELOG.md)**: Semantic release history and detailed changelog entries.
+- **[Contributing Guidelines](CONTRIBUTING.md)**: Developer setup, coding standards, line length, typing, and PR requirements.
+- **[Security Policy](SECURITY.md)**: Vulnerability disclosure procedure, reporting email, and 48-hour response SLA.
+- **[Legal Notice & Attributions](NOTICE)**: Apache-2.0 Section 4 legal notice, trademark reservations, and third-party software attributions.
 
 ## Development & Testing
 
-Run linting, security analysis, and test suites:
+Run all project linters, security audits, and test suites:
 
 ```bash
-# Lint with Ruff
-uv run ruff check .
+# Run code style and lint checks
+uv run ruff check src/ tests/
 
-# Check formatting
-uv run ruff format --check .
-
-# Security scanning with Bandit
+# Run static application security testing (SAST)
 uv run bandit -r src/
 
-# Run pytest with code coverage
+# Run unit and integration tests with coverage
 uv run pytest
 ```
 
@@ -154,6 +124,7 @@ uv run pytest
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENSE) and [NOTICE](NOTICE) files for details.
 
-Copyright (c) 2026 Logihertz Systems OPC Pvt Ltd.
+Developed with precision by **Logihertz Systems (OPC) Private Limited** (`logihertzsystems`).  
+Created, architected, and engineered by **Sameer Tawade** (Creator, Founder, Director & Whole and Sole Developer — `ops@logihertz.com`).

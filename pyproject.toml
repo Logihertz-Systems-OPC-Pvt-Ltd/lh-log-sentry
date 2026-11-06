@@ -5,12 +5,16 @@ build-backend = "hatchling.build"
 [project]
 name = "lh-log-sentry"
 version = "0.1.0"
-description = "Lightweight log anomaly detector for Linux authentication, syslog, and web access logs"
+description = "Parses Linux auth.log, syslog, Nginx/Apache access logs, and JSON audit streams to detect SSH brute-force campaigns, sudo privilege escalations, log tampering/truncation gaps, and suspicious command execution."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
 authors = [
-    { name = "Logihertz Systems OPC Pvt Ltd" }
+    { name = "logihertzsystems", email = "ops@logihertz.com" },
+    { name = "Sameer Tawade (Creator, Founder, Director & Sole Developer)", email = "ops@logihertz.com" },
+]
+maintainers = [
+    { name = "Logihertz Systems (OPC) Private Limited", email = "ops@logihertz.com" },
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -38,6 +42,13 @@ dev = [
     "ruff>=0.4.0",
     "bandit>=1.7.0",
 ]
+
+
+[project.urls]
+Homepage = "https://github.com/Logihertz-Systems-OPC-Pvt-Ltd/lh-log-sentry"
+Repository = "https://github.com/Logihertz-Systems-OPC-Pvt-Ltd/lh-log-sentry"
+Documentation = "https://github.com/Logihertz-Systems-OPC-Pvt-Ltd/lh-log-sentry#documentation"
+Issues = "https://github.com/Logihertz-Systems-OPC-Pvt-Ltd/lh-log-sentry/issues"
 
 [project.scripts]
 lh-sentry = "lh_log_sentry.cli:app"

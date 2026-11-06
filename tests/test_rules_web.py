@@ -1,3 +1,13 @@
+# ==============================================================================
+# Product:       lh-log-sentry (lh-sentry)
+# Module:        tests.test_rules_web
+# Role:          Test Suite & Rule Verification
+# Organization:  Logihertz Systems (OPC) Private Limited (logihertzsystems)
+# Creator:       Sameer Tawade (Creator, Founder, Director & Whole and Sole Developer)
+# Contact:       ops@logihertz.com | https://logihertz.com/
+# License:       Apache License 2.0 (SPDX-License-Identifier: Apache-2.0)
+# ==============================================================================
+
 """Unit tests for web log attack rules."""
 
 from datetime import datetime, timedelta
@@ -100,4 +110,3 @@ def test_web_credential_stuffing_rule() -> None:
     assert a.rule_id == "LH-WEB-003"
     assert a.source_ip == "203.0.113.88"
     assert a.metadata["count"] == 6
-

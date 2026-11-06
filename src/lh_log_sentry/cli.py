@@ -1,3 +1,13 @@
+# ==============================================================================
+# Product:       lh-log-sentry (lh-sentry)
+# Module:        src.lh_log_sentry.cli
+# Role:          CLI Interface & Execution Controller
+# Organization:  Logihertz Systems (OPC) Private Limited (logihertzsystems)
+# Creator:       Sameer Tawade (Creator, Founder, Director & Whole and Sole Developer)
+# Contact:       ops@logihertz.com | https://logihertz.com/
+# License:       Apache License 2.0 (SPDX-License-Identifier: Apache-2.0)
+# ==============================================================================
+
 """Command line interface for lh-log-sentry."""
 
 from __future__ import annotations
@@ -14,6 +24,11 @@ from lh_log_sentry.exporters.sarif_exporter import export_sarif
 from lh_log_sentry.exporters.table import render_table_report
 from lh_log_sentry.models import LogType, OutputFormat, SimulationScenario
 from lh_log_sentry.simulator import generate_scenario
+
+# --- Exit Code Semantics ---
+# Exit Code 0: Audit passed successfully with zero policy violations.
+# Exit Code 1: Security findings detected meeting or exceeding failure threshold (--fail-on).
+# Exit Code 2: Command execution error, invalid arguments, or unparseable input target.
 
 app = typer.Typer(
     name="lh-sentry",

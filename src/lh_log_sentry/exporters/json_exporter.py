@@ -1,3 +1,13 @@
+# ==============================================================================
+# Product:       lh-log-sentry (lh-sentry)
+# Module:        src.lh_log_sentry.exporters.json_exporter
+# Role:          SARIF, JSON & Rich Terminal Table Exporters
+# Organization:  Logihertz Systems (OPC) Private Limited (logihertzsystems)
+# Creator:       Sameer Tawade (Creator, Founder, Director & Whole and Sole Developer)
+# Contact:       ops@logihertz.com | https://logihertz.com/
+# License:       Apache License 2.0 (SPDX-License-Identifier: Apache-2.0)
+# ==============================================================================
+
 """JSON exporter for analysis reports."""
 
 from __future__ import annotations
@@ -19,4 +29,3 @@ def export_json(report: AnalysisReport, output_path: Path | str | None = None) -
         target.write_text(json_str + "\n", encoding="utf-8")
 
     return json_str
-

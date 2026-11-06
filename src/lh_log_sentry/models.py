@@ -1,3 +1,13 @@
+# ==============================================================================
+# Product:       lh-log-sentry (lh-sentry)
+# Module:        src.lh_log_sentry.models
+# Role:          Data Models & Rule Definitions
+# Organization:  Logihertz Systems (OPC) Private Limited (logihertzsystems)
+# Creator:       Sameer Tawade (Creator, Founder, Director & Whole and Sole Developer)
+# Contact:       ops@logihertz.com | https://logihertz.com/
+# License:       Apache License 2.0 (SPDX-License-Identifier: Apache-2.0)
+# ==============================================================================
+
 """Data models and enums for lh-log-sentry."""
 
 from __future__ import annotations
@@ -18,6 +28,9 @@ class LogType(StrEnum):
 
 
 class Severity(StrEnum):
+    # --- Severity Rank & Weighting Structure ---
+    # Defines discrete security tiers for findings and threshold gating.
+    # Higher ordinal rankings enforce stricter build break / fail-on gates.
     """Security severity levels."""
 
     LOW = "low"
