@@ -1,0 +1,9 @@
+Package: lh-log-sentry
+Version: 0.1.0
+Section: utils
+Priority: optional
+Architecture: all
+Maintainer: Sameer Tawade <ops@logihertz.com>
+Homepage: https://www.logihertz.com
+Description: lh-sentry - Poisson Distributed Failed Authentication Spike Metric
+ High-throughput SIEM log anomaly and intrusion detection engine parsing Linux auditd, auth.log, and syslog streams for SSH brute-force, privilege escalation, and lateral movement indicators.
